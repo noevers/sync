@@ -25,9 +25,27 @@ const notify = $.isNode() ? require('./sendNotify') : '';
 //Node.js用户请在jdCookie.js处填写京东ck;
 const dailyEggUrl = "https://active.jd.com/forever/btgoose/?channelLv=yxjh&jrcontainer=h5&jrlogin=true"
 const jdCookieNode = $.isNode() ? require('./jdCookie.js') : '';
-const { JSDOM } = $.isNode() ? require('jsdom') : '';
+let jsdom = '';
+try{
+    jsdom = require("jsdom");
+}catch {console.log(`缺少jsdom模块。请进入容器后执行：pnpm i  jsdom -S `); return;}finally{}
+jsdom = require("jsdom");
+const {
+	JSDOM
+} = jsdom;
 const { window } = new JSDOM(``, { url: dailyEggUrl, runScripts: "outside-only", pretentToBeVisual: true, resources: "usable" })
-const Faker = require('./utils/JDSignValidator.js')
+let Faker = '';
+try{
+    Faker = require('./utils/JDSignValidator.js');
+}catch {
+	try{
+		Faker = require('./JDSignValidator.js');
+	}catch {
+		console.log('缺少JDSignValidator.js，请检查文件');
+		return;
+	}
+}finally{}
+
 if ($.isNode()) {
   Object.keys(jdCookieNode).forEach((item) => {
     cookiesArr.push(jdCookieNode[item])
